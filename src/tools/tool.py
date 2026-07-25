@@ -573,11 +573,13 @@ class ToolUtil(object):
         isFavorite = raw.get("is_favorite")
 
         from tools.book import BookEps
+        ## 264793不按sort顺序
         series = raw.get("series", [])
         if series:
-            for v in series:
+            for index, v in enumerate(series):
                 epsInfo = BookEps()
-                epsInfo.index = int(v.get("sort")) - 1
+                epsInfo.index = index
+                epsInfo.sort = int(v.get("sort"))
                 from tools.str import Str
                 if v.get("name"):
                     epsInfo.title = Str.GetStr(Str.EpisodeTitleWithName).format(epsInfo.index+1, v.get("name"))
@@ -614,7 +616,7 @@ class ToolUtil(object):
         epsInfo.epsName = raw.get("name")
         for info in raw.get("series", []):
             if str(info.get("id")) == str(epsInfo.epsId):
-                epsInfo.index = int(info.get("sort")) - 1
+                epsInfo.sort = int(info.get("sort"))
         allIds = []
         idMap = {}
         for name in raw.get("images", []):
@@ -633,6 +635,7 @@ class ToolUtil(object):
             index = idMap.get(int(picId)-1)
             epsInfo.pictureName[index] = name.split(".")[0]
             epsInfo.pictureUrl[index] = "/media/photos/{}/{}".format(epsInfo.epsId, name)
+        epsInfo.allIndex = sorted(epsInfo.pictureUrl.keys())
         return epsInfo
 
     @staticmethod

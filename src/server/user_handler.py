@@ -653,6 +653,7 @@ class GetBookEpsInfoReq2Handler(object):
                 data["st"] = Status.Error
                 return
             epsInfo = ToolUtil.ParseBookEpsInfo2(task.req.ParseData(v.get("data")))
+            epsInfo.index = task.req.epsIndex
             from tools.book import BookMgr
             BookMgr().UpdateBookEps(task.req.bookId, epsInfo)
             data["st"] = Status.Ok
@@ -862,41 +863,46 @@ class DownloadBookHandler(object):
             index = backData.index
             isFail = False
             try:
-                r = requests2.get(request.url,  headers=request.headers,timeout=backData.timeout,
-                               proxies=request.proxy, curl_options=request.curl_opt, stream=True)
-                # fileSize = int(r.headers.get('Content-Length', 0))
                 getSize = 0
                 data = b""
-
-                if r.status_code == 404 or r.status_code == 403 :
-                    if backData.bakParam:
-                        TaskBase.taskObj.downloadBack.emit(backData.bakParam, 0, -Status.Error, b"")
-                    return
-                elif r.status_code != 200:
-                    if backData.bakParam:
-                        TaskBase.taskObj.downloadBack.emit(backData.bakParam, 0, -Status.Error, b"")
-                    return
-
-                now = time.time()
                 isAlreadySend = False
                 try:
-                    addSize = 0
-                    for chunk in r.iter_content():
-                            cur = time.time()
-                            tick = cur - now
-                            addSize += len(chunk)
-                            data += chunk
-                            if tick >= 0.1:
-                                if backData.bakParam :
-                                    isAlreadySend = True
-                                    TaskBase.taskObj.downloadBack.emit(backData.bakParam, addSize, 1, b"")
-                                    addSize = 0
-                                now = cur
+                    r = requests2.get(request.url,  headers=request.headers,timeout=backData.timeout,
+                                   proxies=request.proxy, curl_options=request.curl_opt, stream=True)
+                    # fileSize = int(r.headers.get('Content-Length', 0))
 
-                            getSize += len(chunk)
+                    if r.status_code == 404 or r.status_code == 403 :
+                        if backData.bakParam:
+                            TaskBase.taskObj.downloadBack.emit(backData.bakParam, 0, -Status.Error, b"")
+                        return
+                    elif r.status_code != 200:
+                        if backData.bakParam:
+                            TaskBase.taskObj.downloadBack.emit(backData.bakParam, 0, -Status.Error, b"")
+                        return
 
-                    if backData.bakParam:
-                        TaskBase.taskObj.downloadBack.emit(backData.bakParam, 0, getSize, b"")
+                    now = time.time()
+                    try:
+                        addSize = 0
+                        for chunk in r.iter_content():
+                                cur = time.time()
+                                tick = cur - now
+                                addSize += len(chunk)
+                                data += chunk
+                                if tick >= 0.1:
+                                    if backData.bakParam :
+                                        isAlreadySend = True
+                                        TaskBase.taskObj.downloadBack.emit(backData.bakParam, addSize, 1, b"")
+                                        addSize = 0
+                                    now = cur
+
+                                getSize += len(chunk)
+
+                        if backData.bakParam:
+                            TaskBase.taskObj.downloadBack.emit(backData.bakParam, 0, getSize, b"")
+
+                    except Exception as es:
+                        isFail = True
+                        Log.Error(es)
 
                 except Exception as es:
                     isFail = True

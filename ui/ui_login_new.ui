@@ -670,9 +670,9 @@
             <property name="geometry">
              <rect>
               <x>0</x>
-              <y>0</y>
+              <y>-633</y>
               <width>479</width>
-              <height>3245</height>
+              <height>3269</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -1326,6 +1326,20 @@
               </layout>
              </item>
              <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_29">
+               <item>
+                <widget class="QLabel" name="label_23">
+                 <property name="styleSheet">
+                  <string notr="true">color:rgb(255, 0, 0)</string>
+                 </property>
+                 <property name="text">
+                  <string>*更换分流或IP需重新登录</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
               <layout class="QHBoxLayout" name="horizontalLayout_26">
                <item>
                 <widget class="QLabel" name="label_22">
@@ -1351,7 +1365,7 @@
               </layout>
              </item>
              <item>
-              <widget class="QTableWidget" name="tableWidget">
+              <widget class="BaseTableWidget" name="tableWidget">
                <property name="minimumSize">
                 <size>
                  <width>0</width>
@@ -1432,15 +1446,20 @@
    <extends>QLineEdit</extends>
    <header location="global">component.line_edit.tip_line_edit.h</header>
   </customwidget>
+  <customwidget>
+   <class>BaseTableWidget</class>
+   <extends>QTableWidget</extends>
+   <header location="global">component.tab.base_table_widget.h</header>
+  </customwidget>
  </customwidgets>
  <resources>
   <include location="../res/images.qrc"/>
  </resources>
  <connections/>
  <buttongroups>
-  <buttongroup name="radioImgGroup"/>
   <buttongroup name="sexGroup"/>
   <buttongroup name="radioProxyGroup"/>
   <buttongroup name="radioApiGroup"/>
+  <buttongroup name="radioImgGroup"/>
  </buttongroups>
 </ui>

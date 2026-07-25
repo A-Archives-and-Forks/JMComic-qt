@@ -233,7 +233,7 @@ class TaskDownload(TaskBase, QtTaskBase):
                     return
 
                 if not epsInfo.pictureUrl:
-                    self.AddHttpTask(req.GetBookEpsInfoReq2(task.bookId, epsInfo.epsId), self.HandlerDownload, (taskId, task.ReadingEps))
+                    self.AddHttpTask(req.GetBookEpsInfoReq2(task.bookId, epsInfo.epsId, task.epsIndex), self.HandlerDownload, (taskId, task.ReadingEps))
                     return
 
                 assert isinstance(epsInfo, BookEps)
@@ -262,7 +262,8 @@ class TaskDownload(TaskBase, QtTaskBase):
                     self.SetTaskStatus(taskId, backData, task.Success)
                     return
 
-                pitureName = epsInfo.pictureName.get(task.index)
+                realIndex = epsInfo.GetRealIndex(task.index)
+                pitureName = epsInfo.pictureName.get(realIndex)
                 task.saveParam = (epsInfo.epsId, epsInfo.scrambleId, pitureName)
                 if task.savePath:
                     if ToolUtil.IsHaveFile(task.savePath):
@@ -285,7 +286,7 @@ class TaskDownload(TaskBase, QtTaskBase):
                                 TaskBase.taskObj.downloadBack.emit(taskId, 0, 0, imgData)
                                 return
 
-                imgUrl = epsInfo.pictureUrl.get(task.index)
+                imgUrl = epsInfo.pictureUrl.get(realIndex)
                 if not imgUrl:
                     self.SetTaskStatus(taskId, backData, task.Error)
                     return

@@ -18,12 +18,13 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QCommandLinkButton,
     QFrame, QGridLayout, QHBoxLayout, QHeaderView,
     QLabel, QLineEdit, QPushButton, QRadioButton,
-    QSizePolicy, QSpacerItem, QTabWidget, QTableWidget,
-    QTableWidgetItem, QToolButton, QVBoxLayout, QWidget)
+    QSizePolicy, QSpacerItem, QTabWidget, QTableWidgetItem,
+    QToolButton, QVBoxLayout, QWidget)
 
 from component.box.wheel_combo_box import WheelComboBox
 from component.line_edit.tip_line_edit import TipLineEdit
 from component.scroll_area.smooth_scroll_area import SmoothScrollArea
+from component.tab.base_table_widget import BaseTableWidget
 import images_rc
 
 class Ui_LoginNew(object):
@@ -455,7 +456,7 @@ class Ui_LoginNew(object):
         self.scrollArea_3.setWidgetResizable(True)
         self.scrollAreaWidgetContents_3 = QWidget()
         self.scrollAreaWidgetContents_3.setObjectName(u"scrollAreaWidgetContents_3")
-        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 479, 3245))
+        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, -633, 479, 3269))
         self.verticalLayout_10 = QVBoxLayout(self.scrollAreaWidgetContents_3)
         self.verticalLayout_10.setObjectName(u"verticalLayout_10")
         self.horizontalLayout_15 = QHBoxLayout()
@@ -893,6 +894,17 @@ class Ui_LoginNew(object):
 
         self.verticalLayout_10.addLayout(self.verticalLayout_2)
 
+        self.horizontalLayout_29 = QHBoxLayout()
+        self.horizontalLayout_29.setObjectName(u"horizontalLayout_29")
+        self.label_23 = QLabel(self.scrollAreaWidgetContents_3)
+        self.label_23.setObjectName(u"label_23")
+        self.label_23.setStyleSheet(u"color:rgb(255, 0, 0)")
+
+        self.horizontalLayout_29.addWidget(self.label_23)
+
+
+        self.verticalLayout_10.addLayout(self.horizontalLayout_29)
+
         self.horizontalLayout_26 = QHBoxLayout()
         self.horizontalLayout_26.setObjectName(u"horizontalLayout_26")
         self.label_22 = QLabel(self.scrollAreaWidgetContents_3)
@@ -920,7 +932,7 @@ class Ui_LoginNew(object):
 
         self.verticalLayout_10.addLayout(self.horizontalLayout_28)
 
-        self.tableWidget = QTableWidget(self.scrollAreaWidgetContents_3)
+        self.tableWidget = BaseTableWidget(self.scrollAreaWidgetContents_3)
         if (self.tableWidget.columnCount() < 5):
             self.tableWidget.setColumnCount(5)
         __qtablewidgetitem = QTableWidgetItem()
@@ -1078,6 +1090,7 @@ class Ui_LoginNew(object):
         self.radio_img_5.setText(QCoreApplication.translate("LoginNew", u"IP\u5206\u6d41", None))
         self.testIpButton.setText(QCoreApplication.translate("LoginNew", u"\u6d4b\u8bd5IP\u5206\u6d41", None))
         self.label_25.setText(QCoreApplication.translate("LoginNew", u"*\u4f7f\u7528\u4ee3\u7406\u65f6IP\u5206\u6d41\u4e0d\u751f\u6548\uff0c\u63a8\u8350\u5f00\u542fECH\u529f\u80fd", None))
+        self.label_23.setText(QCoreApplication.translate("LoginNew", u"*\u66f4\u6362\u5206\u6d41\u6216IP\u9700\u91cd\u65b0\u767b\u5f55", None))
         self.label_22.setText(QCoreApplication.translate("LoginNew", u"\u81ea\u5b9a\u4e49IP\u5217\u8868\uff08\u9017\u53f7\u5206\u5272\uff09\uff1a", None))
         ___qtablewidgetitem = self.tableWidget.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("LoginNew", u"\u540d\u79f0", None));

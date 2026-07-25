@@ -49,6 +49,7 @@ class Str:
     Fail = 1033              # 失败
     DnsError = 1034              # dns错误
     EchError = 1035              # ECH过期
+    SNIError = 1036              # 未识别SNI
 
     Success = 2001         # "下载完成"
     Reading = 2002         # "获取信息"
@@ -337,6 +338,7 @@ class Str:
         cls.strDict[cls.Fail] = QCoreApplication.translate("cls.obj", "失败", None)
         cls.strDict[cls.DnsError] = QCoreApplication.translate("cls.obj", "DNS错误", None)
         cls.strDict[cls.EchError] = QCoreApplication.translate("cls.obj", "ECH过期", None)
+        cls.strDict[cls.SNIError] = QCoreApplication.translate("cls.obj", "未识别SNI", None)
 
         cls.strDict[cls.LoadingPicture] = QCoreApplication.translate("cls.obj",  "图片加载中...", None)
         cls.strDict[cls.LoadingFail] = QCoreApplication.translate("cls.obj",  "图片加载失败", None)

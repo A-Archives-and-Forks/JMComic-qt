@@ -6,7 +6,7 @@ from functools import partial
 from PySide6 import QtCore
 from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QTableWidgetItem, QHeaderView, QAbstractItemView, QCheckBox, QButtonGroup
+from PySide6.QtWidgets import QTableWidgetItem, QHeaderView, QAbstractItemView, QCheckBox, QButtonGroup, QLabel
 
 from component.layout.flow_layout import FlowLayout
 from component.widget.proxy_ip_item_widget import ProxyIpWidget
@@ -41,7 +41,13 @@ class IpItem(object):
         self.isFail = False
         self.downloadFail = False
         self.st = ""
+        self.downloadSt = ""
         self.isSelect = False
+
+    def Copy(self, other):
+        assert isinstance(other, IpItem)
+        self.country = other.country
+        self.asn = other.asn
 
     def __lt__(self, other):
         assert isinstance(other, IpItem)
@@ -106,7 +112,6 @@ class LoginProxyNewWidget(object):
         # self.loginProxy.hide()
         # self.uaRandom.clicked.connect(self.RandomUa)
         self.lastResult = {}
-        self.LoadHistory()
         # self.owner.host_img_domain.SetWordData(GlobalConfig.ImgAutoUrl.value[:])
         self.owner.dohLine.SetWordData(GlobalConfig.DohUrlList.value[:])
         self.allApiUrl = []
@@ -135,6 +140,8 @@ class LoginProxyNewWidget(object):
         self.proxyIpGroup = QButtonGroup(self.owner)
         self.proxyIpGroup.setExclusive(True)
         self.ShowAllItem()
+        self.LoadHistory()
+        self.Sort()
         pass
 
     def SetEnabled(self, enabled):
@@ -192,16 +199,34 @@ class LoginProxyNewWidget(object):
         self.owner.radioApiGroup.buttonClicked.connect(QtOwner().UpdateProxyName)
         self.owner.radioImgGroup.buttonClicked.connect(QtOwner().UpdateProxyName)
         self.proxyIpGroup.buttonClicked.connect(QtOwner().UpdateProxyName)
+        self.LoadHistory()
 
     def LoadHistory(self):
-        if not Setting.LastProxyResult.value:
-            return
         try:
-            for k, v in Setting.LastProxyResult.value.items():
-                if hasattr(self.owner, k):
-                    getattr(self.owner, k).setText(str(v))
+            if Setting.LastProxyResult.value:
+                for k, v in Setting.LastProxyResult.value.items():
+                    if hasattr(self.owner, k):
+                        widget = getattr(self.owner, k)
+                        if isinstance(widget, QLabel):
+                            widget.setText(str(v))
+            if Setting.LastIpResult.value:
+                for item in self.allItems.values():
+                    assert isinstance(item, IpItem)
+                    if item.ip in Setting.LastIpResult.value:
+                        item.country = Setting.LastIpResult.value[item.ip].get('country', "")
+                        item.asn = Setting.LastIpResult.value[item.ip].get('asn', "")
+                        item.delay = Setting.LastIpResult.value[item.ip].get('delay', 0)
+                        item.downloadDelay = Setting.LastIpResult.value[item.ip].get('downloadDelay', 0)
+                        item.isFail = Setting.LastIpResult.value[item.ip].get('isFail', "")
+                        item.downloadFail = Setting.LastIpResult.value[item.ip].get('downloadFail', "")
+                        item.st = Setting.LastIpResult.value[item.ip].get('st', "")
+                        item.downloadSt = Setting.LastIpResult.value[item.ip].get('downloadSt', "")
+
         except Exception as es:
             Log.Error(es)
+
+    def SaveHistory(self):
+        Setting.LastProxyResult.SetValue(dict(self.lastResult))
 
     def Init(self):
         if not self.isInitProxy:
@@ -347,11 +372,12 @@ class LoginProxyNewWidget(object):
             request.SetCurlOpt(self.owner.http3Box.isChecked, self.owner.echBox.isChecked, QtOwner().echConfig, item.ip)
             self.owner.AddHttpTask(request, self.StartTestIpBack, backParam=item.index)
 
-            request = req.GetIpInfoReq(item.ip)
-            request.SetProxy(0, "", "")
-            request.SetIndex(0, 0)
-            request.SetCurlOpt(False, False, "")
-            self.owner.AddHttpTask(request, self.GetIpInfo, backParam=item.index)
+            if not item.country or not item.asn:
+                request = req.GetIpInfoReq(item.ip)
+                request.SetProxy(0, "", "")
+                request.SetIndex(0, 0)
+                request.SetCurlOpt(False, False, "")
+                self.owner.AddHttpTask(request, self.GetIpInfo, backParam=item.index)
         return
 
     def CheckSelectBox(self):
@@ -466,12 +492,25 @@ class LoginProxyNewWidget(object):
         else:
             item.downloadDelay = 0
             item.downloadFail = True
-            item.st = st
+            item.downloadSt = st
         self.UpdateRow(item)
         if self.maxSpeedImgCnt <= 0:
             self.Sort()
             self.owner.testIpButton.setEnabled(True)
             self.CheckSelectBox()
+            history = {}
+            for item in self.allItems.values():
+                assert isinstance(item, IpItem)
+                history[item.ip] = {}
+                history[item.ip]['country'] = item.country
+                history[item.ip]['asn'] = item.asn
+                history[item.ip]['delay'] = item.delay
+                history[item.ip]['downloadDelay'] = item.downloadDelay
+                history[item.ip]['isFail'] = item.isFail
+                history[item.ip]['downloadFail'] = item.downloadFail
+                history[item.ip]['st'] = item.st
+                history[item.ip]['downloadSt'] = item.downloadSt
+            Setting.LastIpResult.SetValue(history)
 
     def SaveProxyIp(self):
         tabRow = self.proxyIpGroup.checkedId()
@@ -485,6 +524,9 @@ class LoginProxyNewWidget(object):
 
     def ShowAllItem(self):
         self.ClearAllItem()
+        oldItems = {}
+        for v in self.allItems.values():
+            oldItems[v.ip] = v
         self.allItems = {}
         index = 0
         for j, ip in enumerate(re.split(r'[、，；;,\s]\s*', Setting.PreferCDNList.value)):
@@ -493,6 +535,8 @@ class LoginProxyNewWidget(object):
             item = IpItem(index, j+1, ip,False, True)
             item.isSelect = ip == Setting.ProxyIpValue.value
             self.allItems[index] = item
+            if ip in oldItems:
+                item.Copy(oldItems[ip])
             self.AddRow(index)
             self.UpdateRow(item)
             index += 1
@@ -502,6 +546,8 @@ class LoginProxyNewWidget(object):
             item = IpItem(index, j+1, ip,False, False)
             item.isSelect = ip == Setting.ProxyIpValue.value
             self.allItems[index] = item
+            if ip in oldItems:
+                item.Copy(oldItems[ip])
             self.AddRow(index)
             self.UpdateRow(item)
             index += 1
@@ -511,6 +557,8 @@ class LoginProxyNewWidget(object):
             item = IpItem(index, j+1, ip,True, False)
             item.isSelect = ip == Setting.ProxyIpValue.value
             self.allItems[index] = item
+            if ip in oldItems:
+                item.Copy(oldItems[ip])
             self.AddRow(index)
             self.UpdateRow(item)
             index += 1
@@ -541,9 +589,9 @@ class LoginProxyNewWidget(object):
         if info.isFail:
             speed = Str.GetStr(info.st)
         if info.downloadDelay:
-            speed += "/" + str(int(float(info.downloadDelay))) + "ms"
+             speed += "/" + str(int(float(info.downloadDelay))) + "ms"
         if info.downloadFail:
-            speed += "/" + Str.GetStr(info.st)
+            speed += "/" + Str.GetStr(info.downloadSt)
 
             # speed = ""
         # if info.delay:
@@ -616,9 +664,13 @@ class LoginProxyNewWidget(object):
         st = raw["st"]
         label = getattr(self.owner, "label_api_" + str(i))
         if float(data) > 0.0:
-            label.setText("<font color=#7fb80e>{}</font>".format(str(int(float(data))) + "ms"))
+            text = "<font color=#7fb80e>{}</font>".format(str(int(float(data))) + "ms")
+            label.setText(text)
         else:
-            label.setText("<font color=#d71345>{}</font>".format(Str.GetStr(st)))
+            text = "<font color=#d71345>{}</font>".format(Str.GetStr(st))
+            label.setText(text)
+        objectName = "label_api_" + str(i)
+        self.lastResult[objectName] = text
         self.speedPingNum -= 1
         if self.speedPingNum == 0:
             self.speedDownNum = 0
@@ -628,6 +680,7 @@ class LoginProxyNewWidget(object):
         self.speedDownNum += 1
         if self.speedDownNum >= self.maxNum:
             self.SetEnabled(True)
+            self.SaveHistory()
             return
         if self.speedDownNum == 5:
             self.StartSpeedTest()

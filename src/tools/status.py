@@ -9,6 +9,7 @@ class Status(object):
     NetError = Str.NetError
     DnsError = Str.DnsError
     EchError = Str.EchError
+    SNIError = Str.SNIError
     UserError = Str.UserError
     RegisterError = Str.RegisterError
     UnKnowError = Str.UnKnowError

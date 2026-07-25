@@ -2,6 +2,7 @@ import re
 
 from server.server import Server
 from config import config
+from tools.log import Log
 from tools.singleton import Singleton
 
 # 收藏
@@ -50,17 +51,24 @@ class BookEps(object):
         self.epsName = ""    # 章节名
         self.epsUrl = ""    # 链接
         self.epsId = ""     # 章节Id，和bookId类似
+        self.sort = 0
         self.time = ""
 
         # self.pages = 0         # 总页数
         self.pictureUrl = {}     # 图片
         self.pictureName = {}     # 图片
+        self.allIndex = []
         self.aid = 0
         self.scrambleId = 0
 
     @property
     def pages(self):
         return len(self.pictureUrl)
+
+    def GetRealIndex(self, index):
+        if index >= len(self.allIndex):
+            return index
+        return self.allIndex[index]
 
     def Copy(self, o):
         assert isinstance(o, BookEps)
@@ -69,6 +77,7 @@ class BookEps(object):
         self.epsId = o.epsId
         self.pictureUrl.update(o.pictureUrl)
         self.pictureName.update(o.pictureName)
+        self.allIndex = sorted(self.pictureUrl.keys())
         self.aid = o.aid
 
 
@@ -207,10 +216,12 @@ class BookMgr(Singleton):
         epsInfo = book.pageInfo.epsInfo.get(epsId)
         if not epsInfo:
             return
+        assert isinstance(epsInfo, BookEps)
         epsInfo.aid = aid
         epsInfo.minAid = minAid
         epsInfo.pictureUrl.update(pictureUrl)
         epsInfo.pictureName.update(pictureName)
+        epsInfo.allIndex = sorted(epsInfo.pictureUrl.keys())
         return
 
     def UpdateBookEps(self, bookId, newEps):
@@ -219,7 +230,14 @@ class BookMgr(Singleton):
         assert isinstance(book, BookInfo)
         if not book:
             return
-        epsInfo = book.pageInfo.epsInfo.get(newEps.index)
+        epsInfo = None
+        if newEps.index >= 0 :
+            epsInfo = book.pageInfo.epsInfo.get(newEps.index)
+        else:
+            for v in book.pageInfo.epsInfo.values():
+                if v.epsId == newEps.epsId:
+                    epsInfo = v
+                    break
         if epsInfo:
             epsInfo.Copy(newEps)
             return

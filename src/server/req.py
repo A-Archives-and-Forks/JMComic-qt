@@ -35,6 +35,8 @@ class ServerReq(object):
         self.curl_opt = {}
         self.isApi = False
         self.isImg = False
+        self.isRegister = False
+        self.isH3 = False
         host = ToolUtil.GetUrlHost(self.url)
         if "https://" + host in GlobalConfig.Url2List.value :
             self.isApi = True
@@ -43,6 +45,9 @@ class ServerReq(object):
         if "https://" +host in GlobalConfig.PicUrlList.value:
             self.isImg = True
             self.timeout = Setting.ImgTimeOut.GetIndexV()
+
+        if "https://" + host in GlobalConfig.Url.value:
+            self.isRegister = True
         # if Setting.ProxySelectIndex.value == 5:
         #     host = ToolUtil.GetUrlHost(url)
         #     if host in GlobalConfig.Url2List.value:
@@ -62,6 +67,8 @@ class ServerReq(object):
         if self.isApi and not self.proxyUrl and Setting.ProxySelectIndex.value == 5:
             self.ipList = [Setting.ProxyIpValue.value]
         elif self.isImg and not self.proxyUrl and Setting.ProxyImgSelectIndex.value == 5:
+            self.ipList = [Setting.ProxyIpValue.value]
+        elif self.isRegister and not self.proxyUrl and Setting.ProxyImgSelectIndex.value == 5:
             self.ipList = [Setting.ProxyIpValue.value]
         else:
             self.ipList = []
@@ -105,10 +112,11 @@ class ServerReq(object):
             self.proxy = {"http": None, "https": None}
 
     def SetCurlOpt(self, isHttp3=False, isEch=False, echConfig="", dnsIpList=None):
+        self.ipList = dnsIpList
         self.curl_opt = dict()
         self.curl_opt[CurlOpt.HTTP_VERSION] = CurlHttpVersion.V2_0
         host = ToolUtil.GetUrlHost(self.url)
-        isEch = isEch and (self.isImg or self.isApi) and not self.proxyUrl
+        isEch = isEch and (self.isImg or self.isApi or self.isRegister) and not self.proxyUrl
         # allUrls = GlobalConfig.DohUrlList.value[:]
         # allUrls.extend(GlobalConfig.NoHttp3Url.value[:])
         # allUrls.append(Setting.DohAddress.value)
@@ -128,6 +136,7 @@ class ServerReq(object):
                 self.curl_opt[CurlOpt.RESOLVE] = [f"{host}:443:{ipStr}"]
         if isHttp3:
             self.curl_opt[CurlOpt.HTTP_VERSION] = CurlHttpVersion.V3
+            self.isH3 = True
 
     def ResetToSwitchNextUrl(self):
         if not self.resetUrl:
@@ -156,18 +165,19 @@ class ServerReq(object):
         #     Log.Info("request 404 switch:{}->{}".format(host, newHost))
         #     return True
 
-    def __str__(self):
+    def GetPri(self):
         ech = False
         if CurlOpt.ECH in self.curl_opt:
             ech = True
-        if Setting.LogIndex.value == 0:
-            return self.__class__.__name__
-        elif Setting.LogIndex.value == 1:
-            return "{}, ech:{}, url:{}, ip:{}".format(self.__class__.__name__, ech, self.url, self.ipList)
+        if Setting.LogIndex.value <= 1:
+            return "{}, ech:{}, url:{}, ip:{}, h3:{}".format(self.__class__.__name__, ech, self.url, self.ipList, self.isH3)
         headers = dict()
         headers.update(self.headers)
         params = self.params
-        return "{}, ech:{}, url:{}, proxy:{}, method:{}, headers:{}, params:{}".format(self.__class__.__name__, ech, self.url, self.proxy, self.method, headers, params)
+        return "{}, ech:{}, url:{}, ip:{}, proxy:{}, method:{}, headers:{}, params:{}".format(self.__class__.__name__, ech, self.url, self.ipList, self.proxy, self.method, headers, params)
+
+    def __str__(self):
+        return self.GetPri()
 
     def GetHeader(self, _url: str, method: str) -> dict:
         param = "{}{}".format(self.now, "18comicAPP")
@@ -263,16 +273,15 @@ class CheckUpdateReq(ServerReq):
         data = dict()
         data["version"] = config.RealVersion
         data["platform"] = platform.platform()
+        params = ToolUtil.DictToUrl(data)
         if not isPre:
-            newList = [v + "/version.txt?" for v in url2List[1:]]
-            url = url2List[0] + "/version.txt?"
+            newList = [v + "/version.txt?" + params for v in url2List[1:]]
+            url = url2List[0] + "/version.txt?" + params
         else:
-            newList = [v + "/version_pre.txt?" for v in url2List[1:]]
-            url = url2List[0] + "/version_pre.txt?"
-        url += ToolUtil.DictToUrl(data)
+            newList = [v + "/version_pre.txt?" + params for v in url2List[1:]]
+            url = url2List[0] + "/version_pre.txt?" + params
         super(self.__class__, self).__init__(url, {}, method)
         self.isParseRes = False
-        self.headers["user-agent"] = config.RealVersion
         self.useImgProxy = False
         self.resetUrl = newList
         self.resetCnt = len(url2List)
@@ -283,15 +292,14 @@ class CheckUpdateInfoReq(ServerReq):
     def __init__(self, url2List, newVersion):
         method = "GET"
         data = dict()
+        params = ToolUtil.DictToUrl(data)
         data["version"] = config.RealVersion
         data["platform"] = platform.platform()
-        url = url2List[0] + "/{}.txt?".format(newVersion)
-        url += ToolUtil.DictToUrl(data)
+        url = url2List[0] + "/{}.txt?".format(newVersion) + params
         super(self.__class__, self).__init__(url, {}, method)
-        self.headers["user-agent"] = config.RealVersion
         self.isParseRes = False
         self.useImgProxy = False
-        self.resetUrl = [v + "/{}.txt?".format(newVersion) for v in url2List[1:]]
+        self.resetUrl = [v + "/{}.txt?".format(newVersion) + params for v in url2List[1:]]
         self.resetCnt = len(url2List)
 
 
@@ -300,15 +308,14 @@ class CheckUpdateConfigReq(ServerReq):
     def __init__(self, url2List):
         method = "GET"
         data = dict()
+        params = ToolUtil.DictToUrl(data)
         data["version"] = config.RealVersion
         data["platform"] = platform.platform()
-        url = url2List[0] + "/config.txt?"
-        url += ToolUtil.DictToUrl(data)
+        url = url2List[0] + "/config.txt?" + params
         super(self.__class__, self).__init__(url, {}, method)
-        self.headers["user-agent"] = config.RealVersion
         self.isParseRes = False
         self.useImgProxy = False
-        self.resetUrl = [v + "/config.txt?" for v in url2List[1:]]
+        self.resetUrl = [v + "/config.txt?" + params for v in url2List[1:]]
         self.resetCnt = len(url2List)
 
 
@@ -515,7 +522,7 @@ class GetBookEpsScrambleReq2(ServerReq):
 
 # 章节信息
 class GetBookEpsInfoReq2(ServerReq):
-    def __init__(self, bookId, epsId):
+    def __init__(self, bookId, epsId, epsIndex):
         self.bookId = bookId
         url = GlobalConfig.GetApiUrl() + "/chapter"
         method = "GET"
@@ -523,7 +530,7 @@ class GetBookEpsInfoReq2(ServerReq):
         data["comicName"] = ""
         data["skip"] = ""
         data["id"] = epsId
-
+        self.epsIndex = epsIndex
         param = ToolUtil.DictToUrl(data)
         if param:
             url += "/?" + param
@@ -1104,7 +1111,8 @@ class SpeedTestPingReq(ServerReq):
 # 测试Ping
 class SpeedTestPing2Req(ServerReq):
     def __init__(self, url):
-        url = url + "/cdn-cgi/trace"
+        # url = url + "/cdn-cgi/trace"
+        url = url + "/media/albums/1447694_3x4.jpg"
         method = "GET"
         super(self.__class__, self).__init__(url, {}, method)
         self.headers['cache-control'] = 'no-cache'
@@ -1169,7 +1177,7 @@ class GetIpInfoReq(ServerReq):
         super(self.__class__, self).__init__(url, {}, method)
         self.timeout = 5
         self.headers = {
-            "version": config.UpdateVersion
+            "version": config.RealVersion
         }
         self.isParseRes = False
         self.resetUrl = [f"https://parse2.jpacg.cc/ipinfo?ip={ip}"]

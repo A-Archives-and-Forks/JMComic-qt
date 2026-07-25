@@ -105,12 +105,12 @@ class Server(Singleton):
 
     def Init(self):
         # self.UpdateProxy()
-        for i in range(1):
+        # for i in range(1):
             # self.oldSession.append(requests2.Session())
-            thread = threading.Thread(target=self.RunOld, args=[i])
-            thread.setName("HTTP-Old-"+str(i))
-            thread.setDaemon(True)
-            thread.start()
+            # thread = threading.Thread(target=self.RunOld, args=[i])
+            # thread.setName("HTTP-Old-"+str(i))
+            # thread.setDaemon(True)
+            # thread.start()
 
         for i in range(self.threadNum):
             # self.threadSession.append(self.GetNewSession())
@@ -156,6 +156,7 @@ class Server(Singleton):
         #     return httpx.Client(http2=True, verify=False, trust_env=False)
     
     def Run(self, index):
+        time.sleep(2)
         while True:
             task = self._inQueue.get(True)
             self._inQueue.task_done()
@@ -167,17 +168,17 @@ class Server(Singleton):
                 Log.Error(es)
         pass
 
-    def RunOld(self, index):
-        while True:
-            task = self._oldQueue.get(True)
-            self._oldQueue.task_done()
-            try:
-                if task == "":
-                    break
-                self._Send(task, index, isOld=True)
-            except Exception as es:
-                Log.Error(es)
-        pass
+    # def RunOld(self, index):
+    #     while True:
+    #         task = self._oldQueue.get(True)
+    #         self._oldQueue.task_done()
+    #         try:
+    #             if task == "":
+    #                 break
+    #             self._Send(task, index, isOld=True)
+    #         except Exception as es:
+    #             Log.Error(es)
+    #     pass
 
     def Stop(self):
         for i in range(self.threadNum):
@@ -186,6 +187,7 @@ class Server(Singleton):
             self._downloadQueue.put("")
 
     def RunDownload(self, index):
+        time.sleep(2)
         while True:
             task = self._downloadQueue.get(True)
             self._downloadQueue.task_done()
@@ -294,34 +296,40 @@ class Server(Singleton):
                 return
         except exceptions.DNSError as es:
             task.status = Status.DnsError
-            Log.Warn(f"error:{task.req.url}")
+            Log.Warn(f"error:{task.req.GetPri()}")
             Log.Error(es)
         except exceptions.Timeout as es:
             if "Connection was reset" in str(es):
                 task.status = Status.ResetErr
             elif "ECH_REJECTED" in str(es):
                 task.status = Status.EchError
+            elif "TLSV1_ALERT_UNRECOGNIZED_NAME" in str(es):
+                task.status = Status.SNIError
             else:
                 task.status = Status.TimeOut
-            Log.Warn(f"error:{task.req.url}")
+            Log.Warn(f"error:{task.req.GetPri()}")
             Log.Error(es)
         except exceptions.SSLError as es:
             if "Connection was reset" in str(es):
                 task.status = Status.ResetErr
             elif "ECH_REJECTED" in str(es):
                 task.status = Status.EchError
+            elif "TLSV1_ALERT_UNRECOGNIZED_NAME" in str(es):
+                task.status = Status.SNIError
             else:
                 task.status = Status.NetError
-            Log.Warn(f"error:{task.req.url}")
+            Log.Warn(f"error:{task.req.GetPri()}")
             Log.Error(es)
         except exceptions.ConnectionError as es:
             task.status = Status.ConnectErr
-            Log.Warn(f"error:{task.req.url}")
+            Log.Warn(f"error:{task.req.GetPri()}")
             Log.Error(es)
         except Exception as es:
             task.status = Status.NetError
-            Log.Warn(f"error:{task.req.url}")
+            Log.Warn(f"error:{task.req.GetPri()}")
             Log.Error(es)
+        except:
+            Log.Error(f"error:{task.req.GetPri()}")
         finally:
             Log.Info("response{}-> backId:{}, {}, st:{}, {}".format(index, task.backParam, task.req.__class__.__name__, task.status, task.res))
 

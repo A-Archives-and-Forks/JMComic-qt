@@ -2,7 +2,7 @@ import base64
 from functools import partial
 
 from PySide6 import QtWidgets
-from PySide6.QtCore import Signal, QTimer
+from PySide6.QtCore import Signal, QTimer, Qt
 
 from config.setting import Setting, SettingValue
 from interface.ui_login_widget import Ui_LoginWidget
@@ -35,6 +35,7 @@ class LoginNewWidget(object):
         if passwd and isinstance(passwd, str):
             self.owner.passwdEdit_2.setText(passwd)
         self.loginIsInit = False
+        self.owner.loginButton.setShortcut(Qt.Key_Return)
 
         # self.buttonGroup = QtWidgets.QButtonGroup(self)
         # self.buttonGroup.addButton(self.selectIp1)

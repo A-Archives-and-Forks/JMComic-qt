@@ -200,7 +200,7 @@ class MainView(Main, QtTaskBase):
         self.nasView.retranslateUi(self.nasView)
         self.localReadView.retranslateUi(self.localReadView)
         self.bookInfoView.retranslateUi(self.bookInfoView)
-        self.loginNewView.retranslateUi(self.loginNewView )
+        self.loginNewView.retranslateUi(self.loginNewView)
 
     def Init(self):
         IsCanUse = False

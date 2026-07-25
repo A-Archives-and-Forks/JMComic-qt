@@ -112,11 +112,17 @@ class LoginNewView(QtWidgets.QWidget, Ui_LoginNew, QtTaskBase):
                 self.echTick.setText("error")
                 self.echTick.setStyleSheet("background-color:transparent;color:{}".format("#d71345"))
                 Log.Warn("not fetch ech config")
+                self.timer.stop()
+                self.timer.setInterval(1000*(1*60))
+                self.timer.start()
             else:
                 QtOwner().echConfig = data
                 day = time.strftime(Str.GetStr(Str.UpdateTime)+'：%Y-%m-%d-%H:%M:%S', time.localtime(time.time()))
                 self.echTick.setText(day),
                 self.echTick.setStyleSheet("background-color:transparent;color:{}".format(QtOwner().GetThemeColor()))
                 Log.Info(f"update ech config, {data}")
+                self.timer.stop()
+                self.timer.setInterval(1000 * (5 * 60))
+                self.timer.start()
         except Exception as es:
             Log.Error(es)

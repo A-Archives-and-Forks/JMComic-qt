@@ -107,7 +107,7 @@ class Setting:
     HttpProxy = SettingValue("ProxySetting", "", False)
     Sock5Proxy = SettingValue("ProxySetting", "", False)
     PreferCDNIP = SettingValue("ProxySetting", "104.18.227.172", False)
-    PreferCDNList = SettingValue("ProxySetting", "104.18.227.172", False)
+    PreferCDNList = SettingValue("ProxySetting", "104.18.227.172,104.16.16.230,104.16.108.62,104.24.169.89,104.19.229.139,104.21.73.214", False)
     IsUseHttps = SettingValue("ProxySetting", 1, False)
     ProxySelectIndex = SettingValue("ProxySetting", 1, False)
     # IsOpenDoh = SettingValue("ProxySetting", 0, False)
@@ -124,6 +124,7 @@ class Setting:
     LastProxyResult = SettingValue("ProxySetting", {}, False)
     ProxyImgSelectIndex = SettingValue("ProxySetting", 1, False)
     PreferCDNIPImg = SettingValue("ProxySetting", "104.18.227.172", False)
+    LastIpResult = SettingValue("ProxySetting", {}, False)
 
     HostApiDomain = SettingValue("ProxySetting", "www.cdnutc.me", False)
     HostImgDomain = SettingValue("ProxySetting", "cdn-msp.jmapinodeudzn.net", False)

@@ -21,21 +21,21 @@ class GlobalItem(object):
 
 
 class GlobalConfig:
-    Ver = GlobalItem(70)
-    VerTime = GlobalItem("2026-6-20")
+    Ver = GlobalItem(80)
+    VerTime = GlobalItem("2026-7-25")
 
     # web url
     WebDnsList = GlobalItem([])
     JmFbUrl = GlobalItem("https://jmcomicog.net")
 
-    Url = GlobalItem("https://18-comicblade.art")
-    UrlList = GlobalItem(["https://comic18j-yodo.net",
+    Url = GlobalItem("https://comic18j-oomi.net")
+    UrlList = GlobalItem(["https://comic18j-oomi.net",
                           "https://18comic.vip",
                           "https://jmcomic.me",
                           "https://18comic.tw",
                           "https://jmcomic-zzz.org",
-                          "https://comic18j-robo.net",
-                          "https://comic18j-lodo.net"])
+                          "https://comic18j-oomi.cc",
+                          "https://comic18j-oomi.me"])
 
     # mobile url
 
@@ -70,7 +70,7 @@ class GlobalConfig:
     #     "www.cdn-mspjmapiproxy.xyz",
     # ])
 
-    CdnApiUrl = GlobalItem("https://www.cdnhjk.net")
+    CdnApiUrl = GlobalItem("https://www.cdngwc.cc")
     CdnImgUrl = GlobalItem("https://cdn-msp.jmapiproxy3.cc")
     ProxyApiUrl = GlobalItem("https://www.cdnhjk.net")
     ProxyImgUrl = GlobalItem("https://cdn-msp.jmapiproxy3.cc")
@@ -85,12 +85,13 @@ class GlobalConfig:
 
     DohUrlList = GlobalItem(["https://parse.jpacg.cc/parse",
                              "https://doh.pub/dns-query",
+                             "https://parse2.jpacg.cc/parse",
                              "https://dot.pub/dns-query"])
     EchDomain = GlobalItem("cloudflare-ech.com")
     
     ProxyIpList = GlobalItem([
 "158.180.231.216",
-"150.136.87.192",
+"163.47.42.64",
 "43.170.8.95",
 "150.136.219.11",
 "159.89.91.17",
@@ -107,16 +108,12 @@ class GlobalConfig:
 "192.9.250.241",
 "47.251.95.178",
 "152.70.232.72",
-"158.180.231.216",
 "95.216.46.85",
-"152.70.232.72",
-"144.24.73.232",
+"159.203.34.9",
 "107.172.145.153",
-"158.180.231.216",
-"43.170.8.95",
 "46.224.21.216",
 "91.99.20.251",
-"178.104.46.210",
+"159.60.146.82",
 "204.168.238.95",
 "62.238.51.190",
 ])
