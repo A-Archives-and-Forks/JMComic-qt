@@ -1,4 +1,3 @@
-import glob
 import os
 import shutil
 from functools import partial
@@ -152,9 +151,9 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             self.localButton.setIcon(QIcon(":/png/icon/icon_like.png"))
         else:
             self.localButton.setIcon(QIcon(":/png/icon/icon_like_off.png"))
-        path = os.path.join(Setting.GetCachePath(), "cover/{}.*".format(self.bookId))
-        waifuPath = os.path.join(Setting.GetCachePath(), "waifu2x/cover/{}.*".format(self.bookId))
-        if glob.glob(path) or glob.glob(waifuPath):
+        path = os.path.join(Setting.GetCachePath(), "book/{}".format(self.bookId))
+        waifuPath = os.path.join(Setting.GetCachePath(), "waifu2x/book/{}".format(self.bookId))
+        if os.path.isdir(path) or os.path.isdir(waifuPath):
             self.clearButton.setIcon(QIcon(":/png/icon/clear_on.png"))
         else:
             self.clearButton.setIcon(QIcon(":/png/icon/clear_off.png"))
@@ -428,18 +427,16 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.AddHttpTask(req.AddAndDelFavoritesReq2(self.bookId), self.AddFavoriteBack)
 
     def ClearCache(self):
-        displayPath = os.path.join(Setting.GetCachePath(), "cover/{}".format(self.bookId))
-        displayWaifuPath = os.path.join(Setting.GetCachePath(), "waifu2x/cover/{}".format(self.bookId))
-        path = displayPath + ".*"
-        waifuPath = displayWaifuPath + ".*"
-        isClear = QMessageBox.information(self, Str.GetStr(Str.ClearCache), Str.GetStr(Str.ConfirmClearBookCache).format(displayPath, displayWaifuPath), QtWidgets.QMessageBox.Yes|QtWidgets.QMessageBox.No)
+        path = os.path.join(Setting.GetCachePath(), "book/{}".format(self.bookId))
+        waifuPath = os.path.join(Setting.GetCachePath(), "waifu2x/book/{}".format(self.bookId))
+        isClear = QMessageBox.information(self, Str.GetStr(Str.ClearCache), Str.GetStr(Str.ConfirmClearBookCache).format(path, waifuPath), QtWidgets.QMessageBox.Yes|QtWidgets.QMessageBox.No)
         if isClear == QtWidgets.QMessageBox.Yes:
             if not Setting.SavePath.value:
                 return
-            for f in glob.glob(path):
-                os.remove(f)
-            for f in glob.glob(waifuPath):
-                os.remove(f)
+            if os.path.isdir(path):
+                shutil.rmtree(path, True)
+            if os.path.isdir(waifuPath):
+                shutil.rmtree(waifuPath, True)
         self.UpdateFavoriteIcon()
 
     def DelFavoriteBack(self, raw):
