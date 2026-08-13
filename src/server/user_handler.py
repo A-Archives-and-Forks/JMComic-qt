@@ -27,13 +27,22 @@ class CheckUpdateHandler(object):
                 return
             if task.res.raw.status_code != 200:
                 return
-
             verData = task.res.GetText()
             info = verData.replace("v", "").split(".")
-            version = int(info[0]) * 100 + int(info[1]) * 10 + int(info[2]) * 1
+            if len(info) >= 4:
+                version = int(info[0]) * 1000 + int(info[1]) * 100 + int(info[2]) * 10 + int(info[3]) * 10
+            else:
+                version = int(info[0]) * 1000 + int(info[1]) * 100 + int(info[2]) * 10
 
-            info2 = re.findall(r"\d+\d*", os.path.basename(config.UpdateVersion))
-            curversion = int(info2[0]) * 100 + int(info2[1]) * 10 + int(info2[2]) * 1
+            info2 = re.findall(r"\d+\d*", os.path.basename(config.RealVersion))
+            if len(info) >= 4:
+                curversion = int(info2[0]) * 1000 + int(info2[1]) * 100 + int(info2[2]) * 10 + int(info2[3]) * 10
+            else:
+                curversion = int(info2[0]) * 1000 + int(info2[1]) * 100 + int(info2[2]) * 10
+            from config.setting import Setting
+            if not Setting.IsPreUpdate.value:
+                version //= 10
+                curversion //= 10
 
             if version > curversion:
                 data["data"] = verData.replace("\r\n", "").replace("\n", "")
@@ -42,8 +51,8 @@ class CheckUpdateHandler(object):
         except Exception as es:
             pass
         finally:
-            if task.bakParam:
-                TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
+            if task.backParam:
+                TaskBase.taskObj.taskBack.emit(task.backParam, pickle.dumps(data))
 
 
 @handler(req.CheckUpdateInfoReq)
@@ -984,6 +993,34 @@ class DownloadBookHandler(object):
                 Log.Error(es)
                 if backData.bakParam:
                     TaskBase.taskObj.downloadBack.emit(backData.bakParam, 0, -backData.status, b"")
+
+
+@handler(req.GetProxyIpInfoReq)
+class GetProxyIpInfoReqHandler(object):
+    def __call__(self, task):
+        data = {"st": task.status, "data": task.res.GetText()}
+        try:
+            if task.status != Status.Ok:
+                return
+
+            from natsort import natsorted
+            ips = json.loads(task.res.raw.content)
+            allIps = []
+            if isinstance(ips, list):
+                for ip in ips:
+                    v = ip.split(":")
+                    if not v or not v[0]:
+                        continue
+                    allIps.append(v[0])
+                data['list'] = natsorted(allIps)
+            else:
+                data['list'] = []
+        except Exception as es:
+            data["st"] = Status.ParseError
+            Log.Error(es)
+        finally:
+            if task.backParam:
+                TaskBase.taskObj.taskBack.emit(task.backParam, pickle.dumps(data))
 
 
 @handler(req.GetCfDnsReq)

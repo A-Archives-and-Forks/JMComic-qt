@@ -187,6 +187,8 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         epsId = self.readImg.epsId
         bookId = self.readImg.bookId
         bookInfo = BookMgr().GetBook(bookId)
+        if not bookInfo:
+            return
 
         if self.curIndex >= self.maxPic - 1:
             if self.readImg.isLocal:
@@ -200,7 +202,6 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
                 self.OpenNextEps()
             else:
 
-                bookInfo = BookMgr().GetBook(bookId)
                 nextEps = bookInfo.pageInfo.nextEps(epsId)
                 if not (nextEps == self.readImg.epsId or nextEps not in bookInfo.pageInfo.epsInfo):
                     QtOwner().ShowMsg(Str.GetStr(Str.AutoSkipNext))
@@ -371,6 +372,8 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         epsId = self.readImg.epsId
         bookId = self.readImg.bookId
         bookInfo = BookMgr().GetBook(bookId)
+        if not bookInfo:
+            return
 
         lasEps = epsId - 1
         if self.readImg.isLocal:
@@ -401,6 +404,8 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         epsId = self.readImg.epsId
         bookId = self.readImg.bookId
         bookInfo = BookMgr().GetBook(bookId)
+        if not bookInfo:
+            return
         nextEps = epsId + 1
         if self.readImg.isLocal:
             if nextEps >= len(self.readImg._cacheBook.eps):

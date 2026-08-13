@@ -190,7 +190,7 @@
               <x>0</x>
               <y>0</y>
               <width>306</width>
-              <height>622</height>
+              <height>234</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -426,7 +426,7 @@
               <x>0</x>
               <y>0</y>
               <width>390</width>
-              <height>622</height>
+              <height>537</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -670,9 +670,9 @@
             <property name="geometry">
              <rect>
               <x>0</x>
-              <y>-633</y>
+              <y>-291</y>
               <width>479</width>
-              <height>3269</height>
+              <height>3297</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -1340,6 +1340,53 @@
               </layout>
              </item>
              <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_30">
+               <item>
+                <widget class="QLabel" name="label_26">
+                 <property name="text">
+                  <string>自定义获取ProxyIP地区：</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="TipLineEdit" name="proxyIpEdit">
+                 <property name="maximumSize">
+                  <size>
+                   <width>80</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="proxyIpLabel">
+                 <property name="minimumSize">
+                  <size>
+                   <width>80</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_11">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </item>
+             <item>
               <layout class="QHBoxLayout" name="horizontalLayout_26">
                <item>
                 <widget class="QLabel" name="label_22">
@@ -1457,9 +1504,9 @@
  </resources>
  <connections/>
  <buttongroups>
-  <buttongroup name="sexGroup"/>
-  <buttongroup name="radioProxyGroup"/>
-  <buttongroup name="radioApiGroup"/>
   <buttongroup name="radioImgGroup"/>
+  <buttongroup name="radioApiGroup"/>
+  <buttongroup name="radioProxyGroup"/>
+  <buttongroup name="sexGroup"/>
  </buttongroups>
 </ui>

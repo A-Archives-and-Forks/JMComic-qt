@@ -133,7 +133,7 @@ class Ui_LoginNew(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents_2 = QWidget()
         self.scrollAreaWidgetContents_2.setObjectName(u"scrollAreaWidgetContents_2")
-        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 306, 622))
+        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 306, 234))
         self.verticalLayout_8 = QVBoxLayout(self.scrollAreaWidgetContents_2)
         self.verticalLayout_8.setObjectName(u"verticalLayout_8")
         self.label = QLabel(self.scrollAreaWidgetContents_2)
@@ -277,7 +277,7 @@ class Ui_LoginNew(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 390, 622))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 390, 537))
         self.verticalLayout_7 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
         self.label_7 = QLabel(self.scrollAreaWidgetContents)
@@ -456,7 +456,7 @@ class Ui_LoginNew(object):
         self.scrollArea_3.setWidgetResizable(True)
         self.scrollAreaWidgetContents_3 = QWidget()
         self.scrollAreaWidgetContents_3.setObjectName(u"scrollAreaWidgetContents_3")
-        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, -633, 479, 3269))
+        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, -291, 479, 3297))
         self.verticalLayout_10 = QVBoxLayout(self.scrollAreaWidgetContents_3)
         self.verticalLayout_10.setObjectName(u"verticalLayout_10")
         self.horizontalLayout_15 = QHBoxLayout()
@@ -905,6 +905,32 @@ class Ui_LoginNew(object):
 
         self.verticalLayout_10.addLayout(self.horizontalLayout_29)
 
+        self.horizontalLayout_30 = QHBoxLayout()
+        self.horizontalLayout_30.setObjectName(u"horizontalLayout_30")
+        self.label_26 = QLabel(self.scrollAreaWidgetContents_3)
+        self.label_26.setObjectName(u"label_26")
+
+        self.horizontalLayout_30.addWidget(self.label_26)
+
+        self.proxyIpEdit = TipLineEdit(self.scrollAreaWidgetContents_3)
+        self.proxyIpEdit.setObjectName(u"proxyIpEdit")
+        self.proxyIpEdit.setMaximumSize(QSize(80, 16777215))
+
+        self.horizontalLayout_30.addWidget(self.proxyIpEdit)
+
+        self.proxyIpLabel = QLabel(self.scrollAreaWidgetContents_3)
+        self.proxyIpLabel.setObjectName(u"proxyIpLabel")
+        self.proxyIpLabel.setMinimumSize(QSize(80, 0))
+
+        self.horizontalLayout_30.addWidget(self.proxyIpLabel)
+
+        self.horizontalSpacer_11 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_30.addItem(self.horizontalSpacer_11)
+
+
+        self.verticalLayout_10.addLayout(self.horizontalLayout_30)
+
         self.horizontalLayout_26 = QHBoxLayout()
         self.horizontalLayout_26.setObjectName(u"horizontalLayout_26")
         self.label_22 = QLabel(self.scrollAreaWidgetContents_3)
@@ -1091,6 +1117,8 @@ class Ui_LoginNew(object):
         self.testIpButton.setText(QCoreApplication.translate("LoginNew", u"\u6d4b\u8bd5IP\u5206\u6d41", None))
         self.label_25.setText(QCoreApplication.translate("LoginNew", u"*\u4f7f\u7528\u4ee3\u7406\u65f6IP\u5206\u6d41\u4e0d\u751f\u6548\uff0c\u63a8\u8350\u5f00\u542fECH\u529f\u80fd", None))
         self.label_23.setText(QCoreApplication.translate("LoginNew", u"*\u66f4\u6362\u5206\u6d41\u6216IP\u9700\u91cd\u65b0\u767b\u5f55", None))
+        self.label_26.setText(QCoreApplication.translate("LoginNew", u"\u81ea\u5b9a\u4e49\u83b7\u53d6ProxyIP\u5730\u533a\uff1a", None))
+        self.proxyIpLabel.setText("")
         self.label_22.setText(QCoreApplication.translate("LoginNew", u"\u81ea\u5b9a\u4e49IP\u5217\u8868\uff08\u9017\u53f7\u5206\u5272\uff09\uff1a", None))
         ___qtablewidgetitem = self.tableWidget.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("LoginNew", u"\u540d\u79f0", None));

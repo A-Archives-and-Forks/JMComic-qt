@@ -93,7 +93,8 @@ class Server(Singleton):
         self.token = ""
         self._inQueue = Queue()
         self._downloadQueue = Queue()
-        self._oldQueue = Queue()
+        # self._oldQueue = Queue()
+        self._speedQueue = Queue()
         self.threadHandler = 0
         self.threadNum = config.ThreadNum
 
@@ -123,6 +124,13 @@ class Server(Singleton):
             # self.downloadSession.append(self.GetNewSession())
             thread = threading.Thread(target=self.RunDownload, args=[i])
             thread.setName("Download-" + str(i))
+            thread.setDaemon(True)
+            thread.start()
+
+        for i in range(8):
+            # self.threadSession.append(self.GetNewSession())
+            thread = threading.Thread(target=self.RunSpeed, args=[i])
+            thread.setName("Speed-" + str(i))
             thread.setDaemon(True)
             thread.start()
 
@@ -168,6 +176,19 @@ class Server(Singleton):
                 Log.Error(es)
         pass
 
+    def RunSpeed(self, index):
+        time.sleep(2)
+        while True:
+            task = self._speedQueue.get(True)
+            self._speedQueue.task_done()
+            try:
+                if task == "":
+                    break
+                self._Send(task, index)
+            except Exception as es:
+                Log.Error(es)
+        pass
+
     # def RunOld(self, index):
     #     while True:
     #         task = self._oldQueue.get(True)
@@ -185,6 +206,8 @@ class Server(Singleton):
             self._inQueue.put("")
         for i in range(self.downloadNum):
             self._downloadQueue.put("")
+        for i in range(8):
+            self._speedQueue.put("")
 
     def RunDownload(self, index):
         time.sleep(2)
@@ -267,6 +290,12 @@ class Server(Singleton):
             else:
                 return self._Download(Task(request, backParam), index)
         else:
+            if isinstance(request, (req.SpeedTestPingReq, req.SpeedTestPing2Req)):
+                if isASync:
+                    return self._speedQueue.put(Task(request, backParam))
+                else:
+                    return self._Send(Task(request, backParam), index)
+
             if isASync:
                 return self._inQueue.put(Task(request, backParam))
             else:

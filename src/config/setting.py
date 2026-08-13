@@ -115,6 +115,7 @@ class Setting:
     DohAddress = SettingValue("ProxySetting", "https://parse.jpacg.cc/parse", False)
     EchConfig = SettingValue("ProxySetting", "", False)
     EchProxyIndex = SettingValue("ProxySetting", 0, False, ["Auto", "true", "false"])
+    ProxyIpLastList =  SettingValue("ProxySetting", "", False)
     ProxyIpValue =  SettingValue("ProxySetting", "", False)
 
     EnableEch = SettingValue("ProxySetting", 1, False)
@@ -125,6 +126,7 @@ class Setting:
     ProxyImgSelectIndex = SettingValue("ProxySetting", 1, False)
     PreferCDNIPImg = SettingValue("ProxySetting", "104.18.227.172", False)
     LastIpResult = SettingValue("ProxySetting", {}, False)
+    ProxyIpCountry = SettingValue("ProxySetting", "", False)
 
     HostApiDomain = SettingValue("ProxySetting", "www.cdnutc.me", False)
     HostImgDomain = SettingValue("ProxySetting", "cdn-msp.jmapinodeudzn.net", False)
@@ -133,7 +135,7 @@ class Setting:
     RegisterProsyIndex = SettingValue("ProxySetting", 1, False)
     ApiTimeOut = SettingValue("ProxySetting", 1, False, [2, 5, 7, 10])
     ImgTimeOut = SettingValue("ProxySetting", 1, False, [2, 5, 7, 10, 15])
-    
+
     # 下载与缓存
     SavePath = SettingValue("DownloadSetting", "", False)
     SaveNameType = SettingValue("DownloadSetting", 0, False)

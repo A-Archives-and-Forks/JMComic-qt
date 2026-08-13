@@ -6,6 +6,7 @@ from PySide6.QtGui import QPixmap, Qt, QIcon, QGuiApplication
 from PySide6.QtWidgets import QWidget, QScroller, QScrollerProperties, QCalendarWidget
 
 from config import config
+from config.global_config import GlobalConfig
 from config.setting import Setting
 from interface.ui_navigation import Ui_Navigation
 from interface.ui_sign_widget import Ui_SignWidget
@@ -179,20 +180,20 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         QtOwner().ShowError(msg if msg else Str.GetStr(st))
 
     def UpdateProxyName(self):
-        if Setting.ProxySelectIndex.value == 5:
+        if GlobalConfig.IsCdnIndex(Setting.ProxySelectIndex.value):
             name = QtOwner().loginNewView.proxyWidget.GetProxyName()
             self.proxyName.setText(name)
-        elif Setting.ProxySelectIndex.value == 6:
+        elif GlobalConfig.IsProxyUrlIndex(Setting.ProxySelectIndex.value):
             self.proxyName.setText(Str.GetStr(Str.UsProxyRoute))
         elif Setting.ProxySelectIndex.value == 7:
             self.proxyName.setText(Str.GetStr(Str.CustomDomain))
         else:
             self.proxyName.setText(Str.GetStr(Str.Route).format(Setting.ProxySelectIndex.value))
 
-        if Setting.ProxyImgSelectIndex.value == 5:
+        if GlobalConfig.IsCdnIndex(Setting.ProxyImgSelectIndex.value):
             name = QtOwner().loginNewView.proxyWidget.GetProxyName()
             self.proxyImgName.setText(name)
-        elif Setting.ProxyImgSelectIndex.value == 6:
+        elif GlobalConfig.IsProxyUrlIndex(Setting.ProxyImgSelectIndex.value):
             self.proxyImgName.setText(Str.GetStr(Str.UsProxyRoute))
         elif Setting.ProxyImgSelectIndex.value == 7:
             self.proxyImgName.setText(Str.GetStr(Str.CustomDomain))

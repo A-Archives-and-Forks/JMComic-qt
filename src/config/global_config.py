@@ -151,10 +151,18 @@ class GlobalConfig:
         return GlobalConfig.GetApiUrl2(Setting.ProxySelectIndex.value)
 
     @staticmethod
+    def IsCdnIndex(index):
+        return index == 5
+
+    @staticmethod
+    def IsProxyUrlIndex(index):
+        return index == 6
+
+    @staticmethod
     def GetApiUrl2(index):
-        if index == 5:
+        if GlobalConfig.IsCdnIndex(index):
             return GlobalConfig.CdnApiUrl.value
-        elif index == 6:
+        elif GlobalConfig.IsProxyUrlIndex(index):
             return GlobalConfig.ProxyApiUrl.value
         elif index >= 7:
             return GlobalConfig.Url2List.value[0]
@@ -166,9 +174,9 @@ class GlobalConfig:
 
     @staticmethod
     def GetImgUrl2(index):
-        if index == 5:
+        if GlobalConfig.IsCdnIndex(index):
             return GlobalConfig.CdnImgUrl.value
-        elif index == 6:
+        elif GlobalConfig.IsProxyUrlIndex(index):
             return GlobalConfig.ProxyImgUrl.value
         elif index >= 7:
             return GlobalConfig.PicUrlList.value[0]

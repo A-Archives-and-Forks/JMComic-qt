@@ -18,7 +18,7 @@ from curl_cffi import CurlOpt, CurlHttpVersion
 class ServerReq(object):
     SPACE_PIC = set()  # 优先使用CDN，如果出现空白图片则回源
 
-    def __init__(self, url, params=None, method="POST") -> None:
+    def __init__(self, url, params=None, method="POST", isOtherCloudFlare=False) -> None:
         self.url = url
         self.resetCnt = 1
         self.resetUrl = []
@@ -27,6 +27,7 @@ class ServerReq(object):
         self.method = method
         self.isParseRes = False
         self.timeout = 5
+        self.isOtherCloudFlare = isOtherCloudFlare
         self.isUseHttps = True
         # self.isUseHttps = bool(Setting.IsUseHttps.value)
         self.proxyUrl = ""
@@ -64,11 +65,11 @@ class ServerReq(object):
             
         from qt_owner import QtOwner
         self.cookies = dict(QtOwner().cookie)
-        if self.isApi and not self.proxyUrl and Setting.ProxySelectIndex.value == 5:
+        if self.isApi and not self.proxyUrl and GlobalConfig.IsCdnIndex(Setting.ProxySelectIndex.value):
             self.ipList = [Setting.ProxyIpValue.value]
-        elif self.isImg and not self.proxyUrl and Setting.ProxyImgSelectIndex.value == 5:
+        elif self.isImg and not self.proxyUrl and GlobalConfig.IsCdnIndex(Setting.ProxyImgSelectIndex.value):
             self.ipList = [Setting.ProxyIpValue.value]
-        elif self.isRegister and not self.proxyUrl and Setting.ProxyImgSelectIndex.value == 5:
+        elif self.isRegister and not self.proxyUrl and GlobalConfig.IsCdnIndex(Setting.ProxySelectIndex.value):
             self.ipList = [Setting.ProxyIpValue.value]
         else:
             self.ipList = []
@@ -79,13 +80,13 @@ class ServerReq(object):
         self.proxyUrl = ""
 
         if self.isApi:
-            if apiIndex == 6:
+            if GlobalConfig.IsProxyUrlIndex(apiIndex):
                 self.proxyUrl = GlobalConfig.ProxyApiDomain2.value
             if apiHost:
                 self.url = self.url.replace(host, ToolUtil.GetUrlHost(apiHost))
 
         if self.isImg:
-            if imgIndex == 6:
+            if GlobalConfig.IsProxyUrlIndex(imgIndex):
                 self.proxyUrl = GlobalConfig.ProxyImgDomain2.value
             if imgHost:
                 self.url = self.url.replace(host, ToolUtil.GetUrlHost(imgHost))
@@ -116,7 +117,7 @@ class ServerReq(object):
         self.curl_opt = dict()
         self.curl_opt[CurlOpt.HTTP_VERSION] = CurlHttpVersion.V2_0
         host = ToolUtil.GetUrlHost(self.url)
-        isEch = isEch and (self.isImg or self.isApi or self.isRegister) and not self.proxyUrl
+        isEch = isEch and (self.isImg or self.isApi or self.isRegister or self.isOtherCloudFlare) and not self.proxyUrl
         # allUrls = GlobalConfig.DohUrlList.value[:]
         # allUrls.extend(GlobalConfig.NoHttp3Url.value[:])
         # allUrls.append(Setting.DohAddress.value)
@@ -1077,7 +1078,8 @@ class GetEchConfigReq(ServerReq):
         super(self.__class__, self).__init__(url, {}, method)
         headers = {
                     "Accept": "application/dns-message",
-                   "Content-Type": "application/dns-message"
+                   "Content-Type": "application/dns-message",
+                    "version": config.RealVersion
         }
         self.timeout = 5
         self.params = self.build_dns_query(domain, GetEchConfigReq.TYPE_HTTPS)
@@ -1182,3 +1184,16 @@ class GetIpInfoReq(ServerReq):
         self.isParseRes = False
         self.resetUrl = [f"https://parse2.jpacg.cc/ipinfo?ip={ip}"]
         self.resetCnt = 2
+
+# 获取proxyip
+class GetProxyIpInfoReq(ServerReq):
+    def __init__(self, country=""):
+        if country:
+            url = f"https://check.proxyip.cmliussss.net/resolve?proxyip=proxyip.{country}.cmliussss.net"
+        else:
+            url = f"https://check.proxyip.cmliussss.net/resolve?proxyip=proxyip.proxyip.cmliussss.net"
+        method = "GET"
+        super(self.__class__, self).__init__(url, {}, method, isOtherCloudFlare=True)
+        self.timeout = 5
+        self.headers = {}
+        self.isParseRes = False
