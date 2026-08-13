@@ -100,6 +100,7 @@ class Server(Singleton):
 
         from config.setting import Setting
         self.downloadNum = Setting.MultiNum.value
+        self.allWaitThread = []
         # self.threadSession = []
         # self.downloadSession = []
         # self.oldSession = []
@@ -119,6 +120,7 @@ class Server(Singleton):
             thread.setName("HTTP-"+str(i))
             thread.setDaemon(True)
             thread.start()
+            self.allWaitThread.append(thread)
 
         for i in range(self.downloadNum):
             # self.downloadSession.append(self.GetNewSession())
@@ -126,6 +128,7 @@ class Server(Singleton):
             thread.setName("Download-" + str(i))
             thread.setDaemon(True)
             thread.start()
+            self.allWaitThread.append(thread)
 
         for i in range(8):
             # self.threadSession.append(self.GetNewSession())
@@ -133,6 +136,7 @@ class Server(Singleton):
             thread.setName("Speed-" + str(i))
             thread.setDaemon(True)
             thread.start()
+            self.allWaitThread.append(thread)
 
     # def GetNewSession(self, isOpenHttp3=False, isOpenEch=False, isOpenDoh=False, dohUrl=""):
     #     curlDict = {}
@@ -202,12 +206,22 @@ class Server(Singleton):
     #     pass
 
     def Stop(self):
+        for q in [self._inQueue, self._downloadQueue, self._speedQueue]:
+            while not q.empty():
+                q.get(False)
+                q.task_done()
+
         for i in range(self.threadNum):
             self._inQueue.put("")
         for i in range(self.downloadNum):
             self._downloadQueue.put("")
         for i in range(8):
             self._speedQueue.put("")
+
+        for thread in self.allWaitThread:
+            Log.Info(f"wait {thread.name} end")
+            thread.join()
+        Log.Info("all thread end")
 
     def RunDownload(self, index):
         time.sleep(2)

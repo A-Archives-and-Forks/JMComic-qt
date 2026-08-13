@@ -484,10 +484,10 @@ class MainView(Main, QtTaskBase):
         self.navigationWidget.Stop()
         TaskWaifu2x().Stop()
         TaskQImage().Stop()
-        TaskMulti().Stop()
         # QtReadImgPoolManager().Stop()
         # TaskDownload().Stop()
         Server().Stop()
+        TaskMulti().Stop()
         # QtTask().Stop()
 
     def OnNewConnection(self):

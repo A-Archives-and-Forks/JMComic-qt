@@ -870,6 +870,7 @@ class DownloadBookHandler(object):
 
             request = backData.req
             index = backData.index
+            cfHit = False
             isFail = False
             try:
                 getSize = 0
@@ -880,6 +881,7 @@ class DownloadBookHandler(object):
                                    proxies=request.proxy, curl_options=request.curl_opt, stream=True)
                     # fileSize = int(r.headers.get('Content-Length', 0))
 
+                    cfHit = r.headers.get("cf-cache-status", False)
                     if r.status_code == 404 or r.status_code == 403 :
                         if backData.bakParam:
                             TaskBase.taskObj.downloadBack.emit(backData.bakParam, 0, -Status.Error, b"")
@@ -987,6 +989,10 @@ class DownloadBookHandler(object):
 
                 if backData.bakParam:
                     TaskBase.taskObj.downloadBack.emit(backData.bakParam, 0, 0, data)
+
+                Log.Info("response{}-> backId:{}, {}, st:{}, hit:{}".format(
+                    index, backData.backParam, backData.req.__class__.__name__,
+                    backData.status, cfHit))
 
             except Exception as es:
                 backData.status = Status.DownloadFail
