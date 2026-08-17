@@ -3,6 +3,7 @@ import os
 import pickle
 import re
 import time
+from contextlib import closing
 from datetime import timedelta
 
 from config import config
@@ -877,43 +878,38 @@ class DownloadBookHandler(object):
                 data = b""
                 isAlreadySend = False
                 try:
-                    r = requests2.get(request.url,  headers=request.headers,timeout=backData.timeout,
-                                   proxies=request.proxy, curl_options=request.curl_opt, stream=True)
-                    # fileSize = int(r.headers.get('Content-Length', 0))
+                    with closing(requests2.get(request.url,  headers=request.headers,timeout=backData.timeout,
+                                   proxies=request.proxy, curl_options=request.curl_opt, stream=True)) as r:
+                        # fileSize = int(r.headers.get('Content-Length', 0))
 
-                    cfHit = r.headers.get("cf-cache-status", False)
-                    if r.status_code == 404 or r.status_code == 403 :
-                        if backData.bakParam:
-                            TaskBase.taskObj.downloadBack.emit(backData.bakParam, 0, -Status.Error, b"")
-                        return
-                    elif r.status_code != 200:
-                        if backData.bakParam:
-                            TaskBase.taskObj.downloadBack.emit(backData.bakParam, 0, -Status.Error, b"")
-                        return
+                        cfHit = r.headers.get("cf-cache-status", False)
+                        if r.status_code == 404 or r.status_code == 403 :
+                            if backData.bakParam:
+                                TaskBase.taskObj.downloadBack.emit(backData.bakParam, 0, -Status.Error, b"")
+                            return
+                        elif r.status_code != 200:
+                            if backData.bakParam:
+                                TaskBase.taskObj.downloadBack.emit(backData.bakParam, 0, -Status.Error, b"")
+                            return
 
-                    now = time.time()
-                    try:
+                        now = time.time()
                         addSize = 0
                         for chunk in r.iter_content():
-                                cur = time.time()
-                                tick = cur - now
-                                addSize += len(chunk)
-                                data += chunk
-                                if tick >= 0.1:
-                                    if backData.bakParam :
-                                        isAlreadySend = True
-                                        TaskBase.taskObj.downloadBack.emit(backData.bakParam, addSize, 1, b"")
-                                        addSize = 0
-                                    now = cur
+                            cur = time.time()
+                            tick = cur - now
+                            addSize += len(chunk)
+                            data += chunk
+                            if tick >= 0.1:
+                                if backData.bakParam :
+                                    isAlreadySend = True
+                                    TaskBase.taskObj.downloadBack.emit(backData.bakParam, addSize, 1, b"")
+                                    addSize = 0
+                                now = cur
 
-                                getSize += len(chunk)
+                            getSize += len(chunk)
 
                         if backData.bakParam:
                             TaskBase.taskObj.downloadBack.emit(backData.bakParam, 0, getSize, b"")
-
-                    except Exception as es:
-                        isFail = True
-                        Log.Error(es)
 
                 except Exception as es:
                     isFail = True
@@ -1133,22 +1129,22 @@ class SpeedTestHandler(object):
             request = backData.req
             index = backData.index
             try:
+                now = time.time()
                 r = requests2.get(request.url, headers=request.headers,timeout=backData.timeout,
-                               proxies=request.proxy, curl_options=request.curl_opt, stream=True)
+                               proxies=request.proxy, curl_options=request.curl_opt)
 
                 fileSize = int(r.headers.get('Content-Length', 0))
                 getSize = 0
-                now = time.time()
                 # 网速快，太卡了，优化成最多100ms一次
-                try:
-                    for chunk in r.iter_content():
-                        getSize += len(chunk)
-                        consume = time.time() - now
-                        if consume >= 3.0:
-                            break
+                # try:
+                #     for chunk in r.iter_content():
+                #         getSize += len(chunk)
+                #         consume = time.time() - now
+                #         if consume >= 3.0:
+                #             break
 
-                except Exception as es:
-                    Log.Error(es)
+                # except Exception as es:
+                #     Log.Error(es)
 
                 consume = time.time() - now
                 if consume == 0:

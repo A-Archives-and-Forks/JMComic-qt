@@ -670,7 +670,7 @@
             <property name="geometry">
              <rect>
               <x>0</x>
-              <y>-291</y>
+              <y>-224</y>
               <width>479</width>
               <height>3297</height>
              </rect>
@@ -1499,14 +1499,73 @@
    <header location="global">component.tab.base_table_widget.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>proxyIpEdit</tabstop>
+  <tabstop>ipListEdit</tabstop>
+  <tabstop>passwdEdit_2</tabstop>
+  <tabstop>saveBox</tabstop>
+  <tabstop>autoBox</tabstop>
+  <tabstop>autoSign</tabstop>
+  <tabstop>loginButton</tabstop>
+  <tabstop>scrollArea_2</tabstop>
+  <tabstop>userEdit</tabstop>
+  <tabstop>nameEdit</tabstop>
+  <tabstop>passwdEdit</tabstop>
+  <tabstop>verEdit</tabstop>
+  <tabstop>gender_Male</tabstop>
+  <tabstop>gender_Female</tabstop>
+  <tabstop>registerButton</tabstop>
+  <tabstop>scrollArea</tabstop>
+  <tabstop>commandLinkButton</tabstop>
+  <tabstop>commandLinkButton2</tabstop>
+  <tabstop>verfyEdit</tabstop>
+  <tabstop>verfyPsEdit</tabstop>
+  <tabstop>verfyButton</tabstop>
+  <tabstop>resetEdit</tabstop>
+  <tabstop>resetButton</tabstop>
+  <tabstop>sendEdit</tabstop>
+  <tabstop>sendButton</tabstop>
+  <tabstop>commandLinkButton_3</tabstop>
+  <tabstop>scrollArea_3</tabstop>
+  <tabstop>proxy_0</tabstop>
+  <tabstop>proxy_1</tabstop>
+  <tabstop>httpLine</tabstop>
+  <tabstop>proxy_2</tabstop>
+  <tabstop>sockEdit</tabstop>
+  <tabstop>proxy_3</tabstop>
+  <tabstop>apiTimeout</tabstop>
+  <tabstop>imgTimeout</tabstop>
+  <tabstop>http3Box</tabstop>
+  <tabstop>echBox</tabstop>
+  <tabstop>dohLine</tabstop>
+  <tabstop>dohTool</tabstop>
+  <tabstop>testSpeedButton</tabstop>
+  <tabstop>radioButton_3</tabstop>
+  <tabstop>radio_img_4</tabstop>
+  <tabstop>radio_img_6</tabstop>
+  <tabstop>radio_img_2</tabstop>
+  <tabstop>radioButton_4</tabstop>
+  <tabstop>radioButton_6</tabstop>
+  <tabstop>radio_img_1</tabstop>
+  <tabstop>radioButton_2</tabstop>
+  <tabstop>radioButton_1</tabstop>
+  <tabstop>radio_img_3</tabstop>
+  <tabstop>radioButton_5</tabstop>
+  <tabstop>radio_img_5</tabstop>
+  <tabstop>testIpButton</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>userEdit_2</tabstop>
+  <tabstop>tableWidget</tabstop>
+  <tabstop>cdnLinkButton</tabstop>
+ </tabstops>
  <resources>
   <include location="../res/images.qrc"/>
  </resources>
  <connections/>
  <buttongroups>
   <buttongroup name="radioImgGroup"/>
+  <buttongroup name="sexGroup"/>
   <buttongroup name="radioApiGroup"/>
   <buttongroup name="radioProxyGroup"/>
-  <buttongroup name="sexGroup"/>
  </buttongroups>
 </ui>
